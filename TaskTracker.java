@@ -1,13 +1,19 @@
+import java.io.IOException;
+import java.nio.file.Files;
+import java.nio.file.Path;
 import java.time.LocalDateTime;
 import java.util.ArrayList;
 import java.util.List;
+import java.util.Optional;
 
 class TaskTracker {
+    private final String taskFile = "task.json";
     private static int taskId = 1;
     private final List<Task> tasks;
 
     public TaskTracker() {
         tasks = new ArrayList<>();
+        load();
     }
 
     public void add(String description) {
@@ -19,6 +25,18 @@ class TaskTracker {
             revertId();
             System.out.println("error: task could not be added. Operation failed!");
         }
+    }
+
+    public void add(Task task) {
+        Optional<Task> findTask = tasks.stream()
+                .filter(t -> t.id == task.id)
+                .findFirst();
+        if (findTask.isPresent()) {
+            return;
+        }
+
+        tasks.add(task);
+        taskId = Math.max(taskId, task.id) + 1;
     }
 
     public void list(String ...args) {
@@ -38,6 +56,7 @@ class TaskTracker {
             return;
         }
 
+        System.out.printf("(%3s, %-35s, %-12s, %-12s, %-12s)\n", "id", "description", "status", "created at", "updated at");
         for (Task task: filteredTasks) {
             System.out.println(task);
         }
@@ -47,8 +66,56 @@ class TaskTracker {
         return taskId++;
     }
 
-    private int revertId() {
-        return --taskId;
+    private void revertId() {
+        --taskId;
+    }
+
+    /* TODO: implement a robust json parser, handle corner cases */
+    private void load() {
+        final Path p = Path.of(taskFile);
+        if (!Files.exists(p)) {
+            return;
+        }
+
+        try {
+            String content = Files.readString(p);
+            content = content.replace("[", "").replace("]", "");
+            var entries = content.split("},");
+            for (var entry: entries) {
+                try {
+                    add(Task.fromJson(entry));
+                } catch (RuntimeException e) {
+                    System.out.println(e);
+                    tasks.clear();
+                    break;
+                }
+            }
+        } catch (IOException e) {
+            System.out.println("error: could not read file 'tasks.json'");
+        }
+    }
+
+    public void save() {
+        if (tasks.isEmpty()) {
+            return;
+        }
+
+        final Path p = Path.of(taskFile);
+        StringBuilder sb = new StringBuilder();
+        sb.append("[");
+        for (Task task: tasks) {
+            sb.append(task.toJson())
+                    .append(",");
+        }
+        sb.delete(sb.length()-1, sb.length()); /* delete the last comma */
+        sb.append("]");
+
+        try {
+            Files.writeString(p, sb.toString());
+        } catch (IOException e) {
+            System.out.println("error: could not save tasks; logging all tasks!");
+            for (Task task: tasks) System.out.println(task);
+        }
     }
 
     public static String help() {

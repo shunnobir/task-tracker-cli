@@ -8,21 +8,22 @@ public class TaskTrackerCLI {
         }
 
         TaskTracker tracker = new TaskTracker();
-        if (args[0].equals("add")) {
-            var desc = processAddOperation(Arrays.copyOfRange(args, 1, args.length));
-            if (!desc.isEmpty()) {
-                tracker.add(desc);
+        switch (args[0]) {
+            case "add" -> {
+                var desc = processAddOperation(Arrays.copyOfRange(args, 1, args.length));
+                if (!desc.isEmpty()) {
+                    tracker.add(desc);
+                }
             }
-        } else if (args[0].equals("list")) {
-            tracker.list(args);
-        } else {
-            System.out.printf("error: unknown operation '%s'\n", args[0]);
+            case "list" -> tracker.list(args);
+            default -> System.out.printf("error: unknown operation '%s'\n", args[0]);
         }
+        tracker.save();
     }
 
     private static String processAddOperation(String ...args) {
         if (args.length < 1) {
-            System.out.println("'add' operation only expects a single argument. Invalid add operation!");
+            System.out.println("error: 'add' expects one argument; none was present");
             return "";
         }
 
