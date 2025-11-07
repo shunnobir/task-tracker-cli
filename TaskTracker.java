@@ -7,7 +7,7 @@ class TaskTracker {
     private final List<Task> tasks;
 
     public TaskTracker() {
-        tasks = new ArrayList<Task>();
+        tasks = new ArrayList<>();
     }
 
     public void add(String description) {
@@ -16,6 +16,7 @@ class TaskTracker {
             tasks.add(new Task(id, description, TaskStatus.TODO, LocalDateTime.now(), LocalDateTime.now()));
             System.out.printf("Task added successfully (ID: %d)\n", id);
         } catch (Exception e) {
+            revertId();
             System.out.println("error: task could not be added. Operation failed!");
         }
     }
