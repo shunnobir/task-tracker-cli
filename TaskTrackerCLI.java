@@ -15,7 +15,7 @@ public class TaskTrackerCLI {
                     tracker.add(desc);
                 }
             }
-            case "list" -> tracker.list(args);
+            case "list" -> tracker.list(Arrays.copyOfRange(args, 1, args.length));
             default -> System.out.printf("error: unknown operation '%s'\n", args[0]);
         }
         tracker.save();

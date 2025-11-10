@@ -43,8 +43,10 @@ class TaskTracker {
     public void list(String ...args) {
         var filters = List.of("todo", "in-progress", "done");
         var filteredTasks = tasks;
-        if (args.length > 0 && args.length != 1) {
-            System.out.println("warning: extraneous argument ignored.");
+        if (args.length > 0) {
+            if (args.length != 1) {
+                System.out.println("warning: extraneous argument ignored.");
+            }
             if (filters.contains(args[0])) {
                 filteredTasks = tasks.stream()
                         .filter(t -> t.status.toString().equals(args[0]))
@@ -53,7 +55,7 @@ class TaskTracker {
         }
 
         if (filteredTasks.isEmpty()) {
-            System.out.println("* no tasks to show *");
+            System.out.println("* no tasks found *");
             return;
         }
 
@@ -71,7 +73,7 @@ class TaskTracker {
         --taskId;
     }
 
-    /* TODO: implement a robust json parser, handle corner cases */
+    /* DONE: implemented a minimal json parser */
     private void load() {
         final Path p = Path.of(taskFile);
         if (!Files.exists(p)) {
@@ -85,7 +87,7 @@ class TaskTracker {
                 try {
                     add(Task.fromMap(entry));
                 } catch (RuntimeException e) {
-                    System.out.println(e);
+                    System.out.println(e.getMessage());
                     tasks.clear();
                     break;
                 }
