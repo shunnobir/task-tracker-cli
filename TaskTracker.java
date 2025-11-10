@@ -4,11 +4,12 @@ import java.nio.file.Path;
 import java.time.LocalDateTime;
 import java.util.ArrayList;
 import java.util.List;
+import java.util.Map;
 import java.util.Optional;
 
 class TaskTracker {
     private final String taskFile = "task.json";
-    private static int taskId = 1;
+    private static long taskId = 1;
     private final List<Task> tasks;
 
     public TaskTracker() {
@@ -62,7 +63,7 @@ class TaskTracker {
         }
     }
 
-    private int getId() {
+    private long getId() {
         return taskId++;
     }
 
@@ -79,11 +80,10 @@ class TaskTracker {
 
         try {
             String content = Files.readString(p);
-            content = content.replace("[", "").replace("]", "");
-            var entries = content.split("},");
+            List<Map<String, String>> entries = JSONParser.parse(content);
             for (var entry: entries) {
                 try {
-                    add(Task.fromJson(entry));
+                    add(Task.fromMap(entry));
                 } catch (RuntimeException e) {
                     System.out.println(e);
                     tasks.clear();
