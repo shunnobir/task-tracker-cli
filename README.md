@@ -26,6 +26,6 @@ java -cp out com.example.taskcli.Main list todo
 ```
 
 ## Notes
-- Stores tasks in `task.json` in current directory. Created automatically.
+- Stores tasks in `tasks.json` in current directory. Created automatically.
 - No external libraries used.
 - Implements a minimal JSON parser using standard regex library
