@@ -16,6 +16,7 @@ public class TaskTrackerCLI {
                 }
             }
             case "list" -> tracker.list(Arrays.copyOfRange(args, 1, args.length));
+            case "mark-in-progress", "mark-done" -> tracker.mark(args);
             default -> System.out.printf("error: unknown operation '%s'\n", args[0]);
         }
         tracker.save();

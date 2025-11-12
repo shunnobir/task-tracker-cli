@@ -28,7 +28,7 @@ public class Task {
         try {
             return new Task(Long.parseLong(id.strip()),
                               desc.strip(),
-                              TaskStatus.valueOf(status.strip().toUpperCase()),
+                              TaskStatus.valueOf(status.strip().toUpperCase().replace("-", "_")),
                               LocalDateTime.parse(createdAt.strip(), dateTimeFormatter),
                               LocalDateTime.parse(updatedAt.strip(), dateTimeFormatter));
         } catch (Exception e) {
@@ -46,13 +46,21 @@ public class Task {
                 updatedAt.format(outFormat));
     }
 
-    public String toJson() {
-        return String.format("{ \"id\": \"%d\", \"description\": \"%s\", " +
-                "\"status\": \"%s\", \"createdAt\": \"%s\", \"updatedAt\": \"%s\" }",
+    public String toJson(int indent) {
+        String space = " ";
+        return String.format("%" + indent*2 + "s{\n%" + indent*4 + "s\"id\": \"%d\",\n%" + indent*4 + "s\"description\": \"%s\",\n" +
+                "%" + indent*4 + "s\"status\": \"%s\",\n%" + indent*4 + "s\"createdAt\": \"%s\",\n%" + indent*4 + "s\"updatedAt\": \"%s\"\n%" + indent*2 + "s}",
+                space,
+                space,
                 id,
+                space,
                 description,
+                space,
                 status,
+                space,
                 createdAt.format(dateTimeFormatter),
-                updatedAt.format(dateTimeFormatter));
+                space,
+                updatedAt.format(dateTimeFormatter),
+                space);
     }
 }

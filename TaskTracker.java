@@ -45,7 +45,7 @@ class TaskTracker {
         var filteredTasks = tasks;
         if (args.length > 0) {
             if (args.length != 1) {
-                System.out.println("warning: extraneous argument ignored.");
+                System.out.println("warning: extraneous arguments are ignored");
             }
             if (filters.contains(args[0])) {
                 filteredTasks = tasks.stream()
@@ -62,6 +62,35 @@ class TaskTracker {
         System.out.printf("(%3s, %-35s, %-12s, %-12s, %-12s)\n", "id", "description", "status", "created at", "updated at");
         for (Task task: filteredTasks) {
             System.out.println(task);
+        }
+    }
+
+    public void mark(String ...args) {
+        if (args.length < 2) {
+            System.out.printf("error: expected two arguments, found %d\n", args.length);
+            return;
+        }
+
+        if (args.length > 2) {
+            System.out.println("warning: extraneous arguments are ignored");
+        }
+
+        try {
+            var id = Long.parseLong(args[1]);
+            var filteredTask = tasks.stream().filter(t -> t.id == id).findFirst();
+            if (filteredTask.isEmpty()) {
+                System.out.println("error: invalid task id; task not found");
+                return;
+            }
+            var task = filteredTask.get();
+            var status = args[0];
+            switch (status) {
+                case "mark-in-progress" -> task.status = TaskStatus.IN_PROGRESS;
+                case "mark-done" -> task.status = TaskStatus.DONE;
+                default -> System.out.println("error: invalid status");
+            }
+        } catch (Exception e) {
+            System.out.println("error: could not filter task");
         }
     }
 
@@ -104,13 +133,13 @@ class TaskTracker {
 
         final Path p = Path.of(taskFile);
         StringBuilder sb = new StringBuilder();
-        sb.append("[");
+        sb.append("[\n");
         for (Task task: tasks) {
-            sb.append(task.toJson())
-                    .append(",");
+            sb.append(task.toJson(1))
+                    .append(",\n");
         }
-        sb.delete(sb.length()-1, sb.length()); /* delete the last comma */
-        sb.append("]");
+        sb.delete(sb.length()-2, sb.length()); /* delete the last comma */
+        sb.append("\n]");
 
         try {
             Files.writeString(p, sb.toString());
