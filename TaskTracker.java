@@ -77,12 +77,11 @@ class TaskTracker {
 
         try {
             var id = Long.parseLong(args[1]);
-            var filteredTask = tasks.stream().filter(t -> t.id == id).findFirst();
-            if (filteredTask.isEmpty()) {
+            var task = getTask(id);
+            if (task == null) {
                 System.out.println("error: invalid task id; task not found");
                 return;
             }
-            var task = filteredTask.get();
             var status = args[0];
             switch (status) {
                 case "mark-in-progress" -> task.status = TaskStatus.IN_PROGRESS;
@@ -92,6 +91,36 @@ class TaskTracker {
         } catch (Exception e) {
             System.out.println("error: could not filter task");
         }
+    }
+
+    public void update(String ...args) {
+        if (args.length < 2) {
+            System.out.printf("error: expected two arguments, found %d\n", args.length);
+            return;
+        }
+
+        if (args.length > 2) {
+            System.out.println("warning: extraneous arguments are ignored");
+        }
+
+        long id = -1;
+        try {
+            id = Long.parseLong(args[0]);
+        } catch (Exception e) {
+            System.out.printf("error: expected id, found '%s'\n", args[0]);
+            return;
+        }
+        var task = getTask(id);
+        if (task == null) {
+            System.out.println("error: invalid task id; task not found");
+            return;
+        }
+        task.description = args[1];
+    }
+
+    private Task getTask(long id) {
+        var filteredTask = tasks.stream().filter(t -> t.id == id).findFirst();
+        return filteredTask.orElse(null);
     }
 
     private long getId() {
