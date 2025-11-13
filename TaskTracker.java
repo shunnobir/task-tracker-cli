@@ -67,7 +67,7 @@ class TaskTracker {
 
     public void mark(String ...args) {
         if (args.length < 2) {
-            System.out.printf("error: expected two arguments, found %d\n", args.length);
+            System.out.printf("error: expected 2 arguments, found %d\n", args.length);
             return;
         }
 
@@ -88,6 +88,7 @@ class TaskTracker {
                 case "mark-done" -> task.status = TaskStatus.DONE;
                 default -> System.out.println("error: invalid status");
             }
+            task.updatedAt = LocalDateTime.now();
         } catch (Exception e) {
             System.out.println("error: could not filter task");
         }
@@ -95,7 +96,7 @@ class TaskTracker {
 
     public void update(String ...args) {
         if (args.length < 2) {
-            System.out.printf("error: expected two arguments, found %d\n", args.length);
+            System.out.printf("error: expected 2 arguments, found %d\n", args.length);
             return;
         }
 
@@ -116,6 +117,32 @@ class TaskTracker {
             return;
         }
         task.description = args[1];
+        task.updatedAt = LocalDateTime.now();
+    }
+
+    public void delete(String ...args) {
+        if (args.length < 1) {
+            System.out.printf("error: expected 1 argument, found %d\n", args.length);
+            return;
+        }
+
+        if (args.length > 1) {
+            System.out.println("warning: extraneous arguments are ignored");
+        }
+
+        long id = -1;
+        try {
+            id = Long.parseLong(args[0]);
+        } catch (Exception e) {
+            System.out.printf("error: expected id, found '%s'\n", args[0]);
+            return;
+        }
+        var task = getTask(id);
+        if (task == null) {
+            System.out.println("error: invalid task id; task not found");
+            return;
+        }
+        tasks.remove(task);
     }
 
     private Task getTask(long id) {
