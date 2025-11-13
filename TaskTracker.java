@@ -104,7 +104,7 @@ class TaskTracker {
             System.out.println("warning: extraneous arguments are ignored");
         }
 
-        long id = -1;
+        long id;
         try {
             id = Long.parseLong(args[0]);
         } catch (Exception e) {
@@ -130,7 +130,7 @@ class TaskTracker {
             System.out.println("warning: extraneous arguments are ignored");
         }
 
-        long id = -1;
+        long id;
         try {
             id = Long.parseLong(args[0]);
         } catch (Exception e) {
