@@ -1,6 +1,6 @@
 # Task Tracker CLI
 
-Simple Task Tracker CLI using only Java standard library.
+Simple Task Tracker CLI using only Java standard library. This project idea is taken from this website: [https://roadmap.sh/projects/task-tracker](https://roadmap.sh/projects/task-tracker).
 
 ## Build & Run
 
